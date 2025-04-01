@@ -462,7 +462,6 @@
             <h4>Connect</h4> <br>
             <div class="social-icons">
                 <a href="https://www.instagram.com/ee_bandhana_products/"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.instagram.com/eebandhana/"><i class="fab fa-instagram"></i></a>
                 <a href="https://wa.link/k1uqd6"><i class="fab fa-whatsapp"></i></a>
                 
             </div>
@@ -549,22 +548,38 @@
         }
 
         // WhatsApp Checkout
-        document.querySelector('.checkout-btn').addEventListener('click', () => {
-            if(cart.length === 0) return alert('Your cart is empty!');
-            
-            const phone = '917795410286'; // Include country code
-            const message = `*New Order*%0A%0A${
-                cart.map(item => 
-                    `➤ ${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
-                ).join('%0A')
-            }%0A%0A*Total*: $${cartTotal.textContent.split('$')[1]}`;
+document.querySelector('.checkout-btn').addEventListener('click', () => {
+    if(cart.length === 0) return alert('Your cart is empty!');
+    
+    const phone = '917795410286'; // Include country code
+    const message = `*New Order from Bandhana Website*%0A%0A` +
+                   `*Order Details:*%0A` +
+                   cart.map(item => 
+                       `➤ ${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
+                   ).join('%0A') +
+                   `%0A%0A*Total Amount:* $${cartTotal.textContent.split('$')[1]}` +
+                   `%0A%0A*Shipping Details:*%0A` +
+                   `Name: [Your Name]%0A` +
+                   `Address: [Your Address]%0A` +
+                   `City: [Your City]%0A` +
+                   `Phone: [Your Phone Number]`;
 
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`);
-            cart = [];
-            updateCart();
-            cartModal.classList.remove('active');
-        });
-
+    // Detect device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Create WhatsApp URL
+    const whatsappUrl = isMobile ? 
+        `https://wa.me/${phone}?text=${encodeURIComponent(message)}` :
+        `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+    
+    // Open in new tab
+    window.open(whatsappUrl, '_blank');
+    
+    // Clear cart
+    cart = [];
+    updateCart();
+    cartModal.classList.remove('active');
+});
         // Close modals when clicking outside
         document.addEventListener('click', (e) => {
             if(!cartModal.contains(e.target) && !e.target.closest('.cart-icon')) {
@@ -574,6 +589,8 @@
                !e.target.closest('.mobile-menu')) {
                 document.querySelector('.nav-links').classList.remove('active');
             }
+
+            
         });
     </script>
 </body>
